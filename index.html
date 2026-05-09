@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Личная галерея фото и видео" />
+    <title>Галерея</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Фото и видео</p>
+        <h1>Галерея</h1>
+      </div>
+      <nav class="filters" aria-label="Фильтры галереи">
+        <button class="filter active" type="button" data-filter="all">Все</button>
+        <button class="filter" type="button" data-filter="image">Фото</button>
+        <button class="filter" type="button" data-filter="video">Видео</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro" aria-label="Описание">
+        <p>
+          Небольшая страница, чтобы удобно поделиться воспоминаниями.
+        </p>
+      </section>
+
+      <section id="gallery" class="gallery" aria-live="polite"></section>
+
+      <section id="empty" class="empty" hidden>
+        <h2>Файлы пока не добавлены</h2>
+        <p>Положите фото и видео в папку <code>media</code>, затем обновите <code>media.json</code>.</p>
+      </section>
+    </main>
+
+    <dialog id="viewer" class="viewer" aria-label="Просмотр медиа">
+      <button class="close" type="button" aria-label="Закрыть">×</button>
+      <div id="viewerContent" class="viewer-content"></div>
+      <p id="viewerCaption" class="viewer-caption"></p>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
