@@ -5,12 +5,16 @@ const viewer = document.querySelector("#viewer");
 const viewerContent = document.querySelector("#viewerContent");
 const viewerCaption = document.querySelector("#viewerCaption");
 const closeButton = document.querySelector(".close");
+const prevButton = document.querySelector(".viewer-prev");
+const nextButton = document.querySelector(".viewer-next");
 
 const imageExtensions = new Set(["jpg", "jpeg", "png", "gif", "webp", "avif"]);
 const videoExtensions = new Set(["mp4", "webm", "mov", "m4v"]);
 
 let items = [];
 let activeFilter = "all";
+let visibleItems = [];
+let activeIndex = 0;
 
 init();
 
@@ -32,27 +36,30 @@ async function init() {
   });
 
   closeButton.addEventListener("click", () => viewer.close());
+  prevButton.addEventListener("click", () => showAdjacent(-1));
+  nextButton.addEventListener("click", () => showAdjacent(1));
   viewer.addEventListener("click", (event) => {
     if (event.target === viewer) viewer.close();
   });
+  document.addEventListener("keydown", handleKeyboard);
 
   render();
 }
 
 function render() {
   gallery.textContent = "";
-  const visibleItems = items.filter((item) => activeFilter === "all" || getType(item.src) === activeFilter);
+  visibleItems = items.filter((item) => activeFilter === "all" || getType(item.src) === activeFilter);
 
   empty.hidden = visibleItems.length > 0;
 
-  visibleItems.forEach((item) => {
+  visibleItems.forEach((item, index) => {
     const type = getType(item.src);
     if (!type) return;
 
     const tile = document.createElement("button");
     tile.className = "tile";
     tile.type = "button";
-    tile.addEventListener("click", () => openViewer(item, type));
+    tile.addEventListener("click", () => openViewer(index));
 
     if (type === "image") {
       const image = document.createElement("img");
@@ -85,7 +92,16 @@ function render() {
   });
 }
 
-function openViewer(item, type) {
+function openViewer(index) {
+  activeIndex = index;
+  showCurrentItem();
+  viewer.showModal();
+}
+
+function showCurrentItem() {
+  const item = visibleItems[activeIndex];
+  const type = getType(item.src);
+
   viewerContent.textContent = "";
 
   if (type === "image") {
@@ -103,7 +119,27 @@ function openViewer(item, type) {
   }
 
   viewerCaption.textContent = item.title || "";
-  viewer.showModal();
+}
+
+function showAdjacent(direction) {
+  if (!viewer.open || visibleItems.length < 2) return;
+
+  activeIndex = (activeIndex + direction + visibleItems.length) % visibleItems.length;
+  showCurrentItem();
+}
+
+function handleKeyboard(event) {
+  if (!viewer.open) return;
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    showAdjacent(-1);
+  }
+
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    showAdjacent(1);
+  }
 }
 
 function getType(src) {
